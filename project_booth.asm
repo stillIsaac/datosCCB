@@ -33,41 +33,58 @@ load_count:
 
 WHILE_N:
 IF_Q1_Q0:
-	MOV 	X, Q0 			// X Es una variable auxiliar que va a almacenar 
-	XOR 	X, Q1
-	CMP 	X, 1
-	COND1
+	MOV 	X, Q0 		#Mover el valor de Q0 a X
+	XOR 	X, Q1		#Hacer un XOR entre X y Q1 y almacenar el valor en X
+	CMP 	X, 1		#Comparar X con 1
+	COND1				#Si X = 1 es porque o es 01 o es 10 y entonces se ejecuta la función COND1
 COND2:
-	SHIFT_RIGHT	
+	SHIFT_RIGHT			# Si X = 0 es porque o es 00 o es 11, entonces se hace un shift a derecha
 
 
 COND1:
-	MOV 	Y, Q0
-	AND 	Y, 1
-	MOV 	ACC, Y
-	JN
-	SUM_AM
-	
- 	
+	MOV 	Y, Q0		#Mover el valor de Q0 a Y
+	AND 	Y, 1		#Hacer AND entre Y y 1 para almacenar el resultado en Y, si es 0 es porque es 10, si es 1 es porque es 01
+	MOV 	ACC, Y		#Mover el resultado del AND a ACC
+	JN					# Revisar if(Y == 0)
+	SUM_AM				#Si, sí, entocnes SUM_AM
+	JMP		CTE			# Y != 0
+ 	SUB_AM
+
+
 SUM_AM:
-	ADD 	A, M
-	
+	ADD 	A, M		# A = A + M
+	JMP		CTE			#Ir a  SHIFT_RIGHT
+	SHIFT_RIGHT
+
+SUB_AM:
+	SUB 	A, M		# A = A - M
+	JMP		CTE			#Ir a  SHIFT_RIGHT
+	SHIFT_RIGHT
+
 SHIFT_RIGHT:
-	SHIFTR 	Q, A
-	SHIFTR 	Q0, Q 
+	MOV 	CARRY1, 0	#Iniciar una variable carry1 en 0
+	MOV 	CARRY2, 0	#Iniciar una variable carry2 en 0
+	SHIFTR 	CARRY, Q	# Hacer una shift a derecha y almacenar el último número que tenía antes del shift, en CARRY1
+	SHIFTR	CARRY2, A	# Hacer una shift a derecha y almacenar el último número que tenía antes del shift, en CARRY2
+	ADD_C	A, CARRY1	# Añadir el CARRY1 a A en el primer bit
+	ADD		Q0, CARRY2	# Añadir CARRY2 a Q0
+	JMP		CTE			##Ir a  REDUCE_COUNTER
+	REDUCE_COUNTER
+ 
 REDUCE_COUNTER:	
-	ADD 	N, -1
-	MOV 	ACC, N
-	JN
-	WHILE_N
-	JMP CTE
-	END_LOOP
+	ADD 	N, -1		#Restar a N -1
+	MOV 	ACC, N		#Cargar N en ACC
+	JN					#Revisar if(N == 0) 
+	END_LOOP			# Si N == 0 ir a END_LOOP
+	JMP 	CTE
+	WHILE_N				#Si N != 0 ir WHILE_N
 
 
 END_LOOP:
-	CONCAT 	A,Q
-	MOV 	ACC, A
-	RET
+	MOV 	W, A		#Mover el valor de a en W que es una variable de 16 bits
+	CONCAT 	W,Q			#Luego, concantenar es decir añadir la última parte de Q a W
+	MOV 	ACC, W		#Mover  W a ACC
+	RET					#Retornar el resultado de la multiplicación que está en W
 	
 
 
