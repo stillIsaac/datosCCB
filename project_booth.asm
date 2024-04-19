@@ -15,14 +15,14 @@ load_multiplicand:
 	MULTIPLICAND		
 	MOV  	DPTR, ACC	# mover la dirección de MULTIPLICAND al DPTR
 	MOV  	ACC, [DPTR]	#Cargar el valor de MULTIPLICAND en ACC
-	MOV  	M, ACC		#poner el valor de MULTIPLICAND en la variable Q1
+	MOV  	Q, ACC		#poner el valor de MULTIPLICAND en la variable M
 
 load_multiplier:
 	MOV  	ACC, CTE	#cargar la dirección de MULTIPLIER en ACC
 	MULTIPLIER  	
 	MOV	    DPTR, ACC  	# mover la dirección de MULTIPLIER al DPTR
 	MOV  	ACC, [DPTR] #Cargar el valor de MULTIPLIER en ACC
-	MOV  	Q, ACC  	#poner el valor de MULTIPLIER en la variable Q1
+	MOV  	M, ACC  	#poner el valor de MULTIPLIER en la variable Q
 
 load_count:
 	MOV  	ACC, CTE	#cargar la dirección de N en ACC
@@ -43,12 +43,11 @@ COND2:
 
 COND1:
 	MOV 	Y, Q0		#Mover el valor de Q0 a Y
-	AND 	Y, 1		#Hacer AND entre Y y 1 para almacenar el resultado en Y, si es 0 es porque es 10, si es 1 es porque es 01
 	MOV 	ACC, Y		#Mover el resultado del AND a ACC
 	JN					# Revisar if(Y == 0)
-	SUM_AM				#Si, sí, entocnes SUM_AM
+	SUB_AM				#Si, sí, entocnes SUB_AM
 	JMP		CTE			# Y != 0
- 	SUB_AM
+ 	SUM_AM
 
 
 SUM_AM:
@@ -64,9 +63,9 @@ SUB_AM:
 SHIFT_RIGHT:
 	MOV 	CARRY1, 0	#Iniciar una variable carry1 en 0
 	MOV 	CARRY2, 0	#Iniciar una variable carry2 en 0
-	SHIFTR 	CARRY, Q	# Hacer una shift a derecha y almacenar el último número que tenía antes del shift, en CARRY1
-	SHIFTR	CARRY2, A	# Hacer una shift a derecha y almacenar el último número que tenía antes del shift, en CARRY2
-	ADD_C	A, CARRY1	# Añadir el CARRY1 a A en el primer bit
+	SHIFTR 	CARRY1, A	# Hacer una shift a derecha y almacenar el último número que tenía antes del shift, en CARRY1
+	SHIFTR	CARRY2, Q	# Hacer una shift a derecha y almacenar el último número que tenía antes del shift, en CARRY2
+	ADD_C	Q, CARRY1	# Añadir el CARRY1 a A en el primer bit
 	ADD		Q0, CARRY2	# Añadir CARRY2 a Q0
 	JMP		CTE			##Ir a  REDUCE_COUNTER
 	REDUCE_COUNTER
